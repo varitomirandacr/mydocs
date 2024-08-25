@@ -21,12 +21,44 @@
         iframe {
             pointer-events: none;
         }
+        #viewerContainer {
+            width: 100%;
+            height: 600px;
+            overflow: auto;
+            position: relative;
+            background: #eee;
+        }
+        #pdfViewer {
+            width: 100%;
+            height: 100%;
+        }
+        /* Hide toolbar and download button */
+        #toolbarContainer, .download, .print {
+            display: none !important;
+        }
     </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.6.347/pdf.min.js" integrity="sha512-Z8CqofpIcnJN80feS2uccz+pXWgZzeKxDsDNMD/dJ6997/LSRY+W4NmEt9acwR+Gt9OHN0kkI1CTianCwoqcjQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.6.347/pdf.worker.entry.min.js" integrity="sha512-NJEHr6hlBM4MkVxJu+7FBk+pn7r+KD8rh+50DPglV/8T8I9ETqHJH0bO7NRPHaPszzYTxBWQztDfL6iJV6CQTw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.6.347/pdf.worker.min.js" integrity="sha512-lHibs5XrZL9hXP3Dhr/d2xJgPy91f2mhVAasrSbMkbmoTSm2Kz8DuSWszBLUg31v+BM6tSiHSqT72xwjaNvl0g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.5.136/pdf_viewer.min.css" integrity="sha512-dbJOtZ3VfH52HMyZ0hz6HcLVK0bESRU396ht5fz4EC6icMeT0MKSYxp6LoydBDaMUHiAGjnI9vA3hZRcCc2Fxw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
 <body>
-    <iframe src="Untitled document.pdf"></iframe>
-
+    <!--<iframe src="Untitled document.pdf"></iframe>-->
+    <div id="viewerContainer">
+        <div id="pdfViewer"></div>
+    </div>
     <script>
+        var url = 'path-to-your-pdf.pdf';
+
+        var loadingTask = pdfjsLib.getDocument("Untitled document.pdf");
+        loadingTask.promise.then(function(pdf) {
+            var pdfViewer = new pdfjsViewer.PDFViewer({
+                container: document.getElementById('viewerContainer')
+            });
+
+            pdfViewer.setDocument(pdf);
+        });
+        
         // Disable right-click
         document.addEventListener('contextmenu', function(e) {
             e.preventDefault();
@@ -39,6 +71,7 @@
             }
         });
     </script>
+    
 </body>
 </html>
 </body>
