@@ -25,7 +25,6 @@
 </head>
 <body>
     <iframe src="Untitled document.pdf"></iframe>
-	<iframe src="https://github.com/varitomirandacr/mydocs/blob/main/Untitled%20document.pdf"></iframe>
 
     <script>
         // Disable right-click
@@ -36,6 +35,13 @@
         // Disable keyboard shortcuts
         document.addEventListener('keydown', function(e) {
             if (e.ctrlKey || e.metaKey) {
+                e.preventDefault();
+            }
+        });
+    </script>
+</body>
+</html>
+taKey) {
                 e.preventDefault();
             }
         });
