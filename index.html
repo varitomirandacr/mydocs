@@ -3,76 +3,58 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Protected PDF Viewer</title>
-    <style>
-        iframe {
-            width: 100%;
-            height: 600px;
-            border: none;
-        }
-        /* Disable text selection */
-        body {
-            -webkit-user-select: none; /* Safari */
-            -moz-user-select: none; /* Firefox */
-            -ms-user-select: none; /* Internet Explorer/Edge */
-            user-select: none; /* Non-prefixed version, currently supported by Chrome, Opera and Firefox */
-        }
-        /* Disable right-click */
-        iframe {
-            pointer-events: none;
-        }
-        #viewerContainer {
-            width: 100%;
-            height: 600px;
-            overflow: auto;
-            position: relative;
-            background: #eee;
-        }
-        #pdfViewer {
-            width: 100%;
-            height: 100%;
-        }
-        /* Hide toolbar and download button */
-        #toolbarContainer, .download, .print {
-            display: none !important;
-        }
-    </style>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.6.347/pdf.min.js" integrity="sha512-Z8CqofpIcnJN80feS2uccz+pXWgZzeKxDsDNMD/dJ6997/LSRY+W4NmEt9acwR+Gt9OHN0kkI1CTianCwoqcjQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.6.347/pdf.worker.entry.min.js" integrity="sha512-NJEHr6hlBM4MkVxJu+7FBk+pn7r+KD8rh+50DPglV/8T8I9ETqHJH0bO7NRPHaPszzYTxBWQztDfL6iJV6CQTw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.6.347/pdf.worker.min.js" integrity="sha512-lHibs5XrZL9hXP3Dhr/d2xJgPy91f2mhVAasrSbMkbmoTSm2Kz8DuSWszBLUg31v+BM6tSiHSqT72xwjaNvl0g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.5.136/pdf_viewer.min.css" integrity="sha512-dbJOtZ3VfH52HMyZ0hz6HcLVK0bESRU396ht5fz4EC6icMeT0MKSYxp6LoydBDaMUHiAGjnI9vA3hZRcCc2Fxw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <title>PDF.js Viewer Example</title>
+    <!-- PDF.js CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.8.162/pdf_viewer.min.css">
 </head>
 <body>
-    <!--<iframe src="Untitled document.pdf"></iframe>-->
-    <div id="viewerContainer">
-        <div id="pdfViewer"></div>
-    </div>
+    <div id="pdf-viewer" class="pdfViewer"></div>
+
+    <!-- PDF.js JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.8.162/pdf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.8.162/pdf_viewer.min.js"></script>
+
     <script>
-        var url = 'path-to-your-pdf.pdf';
+        // URL of the PDF
+        const url = 'Untitled document.pdf';
 
-        var loadingTask = pdfjsLib.getDocument("Untitled document.pdf");
-        loadingTask.promise.then(function(pdf) {
-            var pdfViewer = new pdfjsViewer.PDFViewer({
-                container: document.getElementById('viewerContainer')
+        // PDF.js worker
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.8.162/pdf.worker.min.js';
+
+        // Asynchronous download of the PDF
+        const loadingTask = pdfjsLib.getDocument(url);
+        loadingTask.promise.then(pdf => {
+            console.log('PDF loaded');
+
+            // Fetch the first page
+            pdf.getPage(1).then(page => {
+                console.log('Page loaded');
+
+                const scale = 1.5;
+                const viewport = page.getViewport({ scale });
+
+                // Prepare canvas using PDF page dimensions
+                const canvas = document.createElement('canvas');
+                const context = canvas.getContext('2d');
+                canvas.height = viewport.height;
+                canvas.width = viewport.width;
+
+                // Append the canvas to the div
+                const pdfViewer = document.getElementById('pdf-viewer');
+                pdfViewer.appendChild(canvas);
+
+                // Render PDF page into canvas context
+                const renderContext = {
+                    canvasContext: context,
+                    viewport: viewport
+                };
+                page.render(renderContext).promise.then(() => {
+                    console.log('Page rendered');
+                });
             });
-
-            pdfViewer.setDocument(pdf);
-        });
-        
-        // Disable right-click
-        document.addEventListener('contextmenu', function(e) {
-            e.preventDefault();
-        }, false);
-
-        // Disable keyboard shortcuts
-        document.addEventListener('keydown', function(e) {
-            if (e.ctrlKey || e.metaKey) {
-                e.preventDefault();
-            }
+        }, reason => {
+            console.error('Error loading PDF:', reason);
         });
     </script>
-    
-</body>
-</html>
 </body>
 </html>
